@@ -16,7 +16,7 @@ import java.util.List;
  *This controller provides RESTful endpoints to add, retrieve, and delete incomes. It handles requests for retrieving incomes by date range.
  */
 @RestController
-@RequestMapping("/api/incomes")
+@RequestMapping("/api/income")
 public class IncomeController {
 
     @Autowired

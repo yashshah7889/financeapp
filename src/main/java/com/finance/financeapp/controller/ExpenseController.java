@@ -49,6 +49,17 @@ public class ExpenseController {
         return ResponseEntity.ok(expenses);
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<List<Expense>> getUserExpenses(
+            @RequestParam String username) {
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        List<Expense> expenses = expenseService.getUserExpenses(user);
+        return ResponseEntity.ok(expenses);
+    }
+
     @GetMapping("/category")
     public ResponseEntity<List<Expense>> getUserExpensesByCategory(
             @RequestParam String username,

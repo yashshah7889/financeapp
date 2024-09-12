@@ -60,7 +60,7 @@ public class UserController {
         if (!password.matches(".*\\d.*")) {
             throw new IllegalArgumentException("Password must contain at least one number");
         }
-        if (password.equals(confirmPassword)) {
+        if (!password.equals(confirmPassword)) {
             return ResponseEntity.badRequest().body("Passwords do not match!");
         }
 

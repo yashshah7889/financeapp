@@ -23,11 +23,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf
                         .disable()
-                ) // Disable CSRF for testing; enable it for production
+                ) // Disabled CSRF for testing; enable it for production
                 .authorizeHttpRequests(authorize -> authorize
 
-                        .requestMatchers(HttpMethod.POST,"/login","/api/users/register","/api/expenses","/public/**").permitAll()
-                        .anyRequest().authenticated()//all the request needs to be authenticated
+                        .requestMatchers(HttpMethod.POST,"/login","/api/users/register","/api/expenses","/api/income","/public/**").permitAll()
+                        .anyRequest().permitAll()//all the request needs to be authenticated
                 );
 
         // Add the rate-limiting filter before the authentication filter
