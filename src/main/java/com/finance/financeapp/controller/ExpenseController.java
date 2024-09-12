@@ -1,20 +1,21 @@
 package com.finance.financeapp.controller;
 
+import com.finance.financeapp.dto.ExpenseDTO;
 import com.finance.financeapp.model.Expense;
 import com.finance.financeapp.model.User;
 import com.finance.financeapp.service.ExpenseService;
 import com.finance.financeapp.service.UserService;
+import jakarta.validation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * controller provides RESTful endpoints to add, retrieve, and delete expenses. It handles requests for retrieving expenses by date range and category.
- */
 @RestController
 @RequestMapping("/api/expenses")
 public class ExpenseController {
@@ -26,12 +27,23 @@ public class ExpenseController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<Expense> addExpense(@RequestBody Expense expense, @RequestParam String username) {
+    public ResponseEntity<?> addExpense(@Valid @RequestBody ExpenseDTO expenseDTO, BindingResult result, @RequestParam String username) {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(result.getAllErrors());
+        }
+
         User user = userService.findByUsername(username);
         if (user == null) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body("User not found");
         }
+
+        Expense expense = new Expense();
         expense.setUser(user);
+        expense.setDescription(expenseDTO.getDescription());
+        expense.setAmount(BigDecimal.valueOf(expenseDTO.getAmount()));
+        expense.setDate(expenseDTO.getDate());
+        expense.setCategory(expenseDTO.getCategory());
+
         Expense savedExpense = expenseService.addExpense(expense);
         return ResponseEntity.ok(savedExpense);
     }
@@ -50,8 +62,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<Expense>> getUserExpenses(
-            @RequestParam String username) {
+    public ResponseEntity<List<Expense>> getUserExpenses(@RequestParam String username) {
         User user = userService.findByUsername(username);
         if (user == null) {
             return ResponseEntity.badRequest().body(null);
@@ -61,9 +72,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/category")
-    public ResponseEntity<List<Expense>> getUserExpensesByCategory(
-            @RequestParam String username,
-            @RequestParam String category) {
+    public ResponseEntity<List<Expense>> getUserExpensesByCategory(@RequestParam String username, @RequestParam String category) {
         User user = userService.findByUsername(username);
         if (user == null) {
             return ResponseEntity.badRequest().body(null);
