@@ -26,7 +26,10 @@ public class BudgetController {
             return ResponseEntity.badRequest().body(null);
         }
         budget.setUser(user);
-        Budget savedBudget = budgetService.addBudget(budget);
+        Budget savedBudget = budgetService.addBudget(user, budget.getCategory(),
+                budget.getAmount(),
+                budget.getStartDate(),
+                budget.getEndDate());
         return ResponseEntity.ok(savedBudget);
     }
 
